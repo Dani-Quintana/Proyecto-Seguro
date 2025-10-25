@@ -1,0 +1,28 @@
+name: CI Pipeline PHP
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Configurar PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: ✅ Validar sintaxis PHP
+        run: find . -type f -name "*.php" -exec php -l {} \;
+
+      - name: 🔎 Escaneo de seguridad con PHPStan
+        run: |
+          composer global require phpstan/phpstan
+          ~/.composer/vendor/bin/phpstan analyse --no-progress --level 1 .
